@@ -1,2 +1,2 @@
 # Atalho
-$ ~/ruby terminal.rb
+$ ruby ~/terminal.rb
