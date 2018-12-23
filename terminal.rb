@@ -6,6 +6,7 @@ def init
   puts(" 1 - PostgreSQL - Start ")
   puts(" 2 - PostgreSQL - Stop ")
   puts(" 3 - Redis - Start ")
+  puts(" 4 - Mongo DB - Start ")
   puts(" 0 - Sair ")
 
   # Capiturando o
@@ -19,7 +20,9 @@ def init
   when 2
     exec 'pg_ctl -D /usr/local/var/postgres stop &'
   when 3
-    exec 'redis-server /usr/local/etc/redis.conf &'
+    exec 'redis-server /usr/local/etc/redis.conf'
+  when 4
+    exec 'mongod'
   else
     puts "Opção não catalogada"
     sleep 1
