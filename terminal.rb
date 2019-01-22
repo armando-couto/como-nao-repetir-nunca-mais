@@ -7,6 +7,8 @@ def init
   puts(" 2 - PostgreSQL - Stop ")
   puts(" 3 - Redis - Start ")
   puts(" 4 - Mongo DB - Start ")
+  puts(" 5 - Apache - Start ")
+  puts(" 6 - Apache - Stop ")
   puts(" 0 - Sair ")
 
   # Capiturando o
@@ -23,6 +25,10 @@ def init
     exec 'redis-server /usr/local/etc/redis.conf'
   when 4
     exec 'mongod'
+  when 5
+    exec 'sudo /usr/sbin/apachectl start'
+  when 6
+    exec 'sudo /usr/sbin/apachectl stop'
   else
     puts "Opção não catalogada"
     sleep 1
