@@ -32,9 +32,9 @@ def init
   when 6
     exec 'sudo /usr/sbin/apachectl stop'
   when 7
-    exec 'brew services start mysql'
+    exec 'sudo launchctl load -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist'
   when 8
-    exec 'brew services stop mysql'
+    exec 'sudo launchctl unload -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist'
   else
     puts "Opção não catalogada"
     sleep 1
