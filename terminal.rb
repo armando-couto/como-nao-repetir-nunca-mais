@@ -9,6 +9,8 @@ def init
   puts(" 4 - Mongo DB - Start ")
   puts(" 5 - Apache - Start ")
   puts(" 6 - Apache - Stop ")
+  puts(" 7 - MySQL - Start ")
+  puts(" 8 - MySQL - Stop ")
   puts(" 0 - Sair ")
 
   # Capiturando o
@@ -29,6 +31,10 @@ def init
     exec 'sudo /usr/sbin/apachectl start'
   when 6
     exec 'sudo /usr/sbin/apachectl stop'
+  when 7
+    exec 'brew services start mysql'
+  when 8
+    exec 'brew services stop mysql'
   else
     puts "Opção não catalogada"
     sleep 1
