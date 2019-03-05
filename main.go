@@ -1,10 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"github.com/andlabs/ui"
 	"log"
 	"os/exec"
 )
+
+var message = ""
+
+const SEPARETOR1 = "===========================================================================================================================\n"
+const SEPARETOR2 = "\n===========================================================================================================================\n"
 
 func main() {
 	err := ui.Main(func() {
@@ -26,17 +32,21 @@ func main() {
 			cmd := exec.Command("pg_ctl", "-D", "/usr/local/var/postgres", "start")
 			err := cmd.Run()
 			if err != nil {
-				log.Fatalf("Erro ao dar Start no PostgreSQL %s\n", err)
+				message += fmt.Sprint("Erro ao dar Start no PostgreSQL!", SEPARETOR2)
+				logger.SetText(message)
 			}
-			logger.SetText(psAux())
+			message += fmt.Sprint(psAux(), SEPARETOR1)
+			logger.SetText(message)
 		})
 		buttonPostgreSQLStop.OnClicked(func(*ui.Button) {
 			cmd := exec.Command("pg_ctl", "-D", "/usr/local/var/postgres", "stop")
 			err := cmd.Run()
 			if err != nil {
-				log.Fatal(err)
+				message += fmt.Sprint("Erro ao dar Stop no PostgreSQL!", SEPARETOR2)
+				logger.SetText(message)
 			}
-			logger.SetText(psAux())
+			message += fmt.Sprint(psAux(), SEPARETOR1)
+			logger.SetText(message)
 		})
 
 		window.OnClosing(func(*ui.Window) bool {

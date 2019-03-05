@@ -1,7 +1,7 @@
 # Build com Ruby
 $ ruby ~/terminal.rb
 
-# Build with GoLang
+# Build with Go
 $ go build main.go
 
 ### Link
