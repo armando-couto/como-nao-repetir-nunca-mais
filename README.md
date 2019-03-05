@@ -1,6 +1,3 @@
-# Build com Ruby
-$ ruby ~/terminal.rb
-
 # Build with Go
 $ go build main.go
 
