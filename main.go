@@ -14,6 +14,12 @@ const SEPARETOR2 = "\n==========================================================
 
 func main() {
 	err := ui.Main(func() {
+		cmd := exec.Command("sudo", "true")
+		err := cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		buttonPostgreSQLStart := ui.NewButton("PostgreSQL - Start")
 		buttonPostgreSQLStop := ui.NewButton("PostgreSQL - Stop")
 		buttonRedisStart := ui.NewButton("Redis - Start")
@@ -23,10 +29,14 @@ func main() {
 		buttonMySQLStart := ui.NewButton("MySQL - Start")
 		buttonMySQLStop := ui.NewButton("MySQL - Stop")
 
+		password := ui.NewPasswordEntry()
+
 		logger := ui.NewMultilineEntry()
 		logger.SetReadOnly(true) // Só leitura
 
 		box := ui.NewVerticalBox()
+		box.Append(ui.NewLabel("Digite sua senha de sudo:"), false)
+		box.Append(password, false)
 		box.Append(buttonPostgreSQLStart, false)
 		box.Append(buttonPostgreSQLStop, false)
 		box.Append(buttonRedisStart, false)
@@ -81,46 +91,46 @@ func main() {
 		})
 
 		buttonApacheStart.OnClicked(func(*ui.Button) {
-			retorno, err := exec.Command("bash", "-c", "sudo /usr/sbin/apachectl start").CombinedOutput()
+			_, err := exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo -S /usr/sbin/apachectl start")).Output()
 			if err != nil {
 				message += fmt.Sprint("Erro ao dar Start no Apache!", SEPARETOR2)
 				logger.SetText(message)
 			}
-			message += fmt.Sprint(string(retorno), SEPARETOR2)
+			message += fmt.Sprint("Start no Apache!", SEPARETOR2)
 			logger.SetText(message)
 			message += fmt.Sprint(psAux("ps aux | grep apachectl"), SEPARETOR1)
 			logger.SetText(message)
 		})
 		buttonApacheStop.OnClicked(func(*ui.Button) {
-			retorno, err := exec.Command("bash", "-c", "sudo /usr/sbin/apachectl stop").CombinedOutput()
+			_, err := exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo -S /usr/sbin/apachectl stop")).Output()
 			if err != nil {
-				message += fmt.Sprint("Erro ao dar Start no Apache!", SEPARETOR2)
+				message += fmt.Sprint("Erro ao dar Stop no Apache!", SEPARETOR2)
 				logger.SetText(message)
 			}
-			message += fmt.Sprint(string(retorno), SEPARETOR2)
+			message += fmt.Sprint("Stop no Apache!", SEPARETOR2)
 			logger.SetText(message)
 			message += fmt.Sprint(psAux("ps aux | grep apachectl"), SEPARETOR1)
 			logger.SetText(message)
 		})
 
 		buttonMySQLStart.OnClicked(func(*ui.Button) {
-			retorno, err := exec.Command("bash", "-c", "sudo launchctl load -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist").CombinedOutput()
+			_, err := exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo launchctl load -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist")).Output()
 			if err != nil {
 				message += fmt.Sprint("Erro ao dar Start no MySQL!", SEPARETOR2)
 				logger.SetText(message)
 			}
-			message += fmt.Sprint(string(retorno), SEPARETOR2)
+			message += fmt.Sprint("Start no MySQL!", SEPARETOR2)
 			logger.SetText(message)
 			message += fmt.Sprint(psAux("ps aux | grep mysql"), SEPARETOR1)
 			logger.SetText(message)
 		})
 		buttonMySQLStop.OnClicked(func(*ui.Button) {
-			retorno, err := exec.Command("bash", "-c", "sudo launchctl unload -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist").CombinedOutput()
+			_, err := exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo launchctl unload -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist")).Output()
 			if err != nil {
-				message += fmt.Sprint("Erro ao dar Start no MySQL!", SEPARETOR2)
+				message += fmt.Sprint("Erro ao dar Stop no MySQL!", SEPARETOR2)
 				logger.SetText(message)
 			}
-			message += fmt.Sprint(string(retorno), SEPARETOR2)
+			message += fmt.Sprint("Stop no MySQL!", SEPARETOR2)
 			logger.SetText(message)
 			message += fmt.Sprint(psAux("ps aux | grep mysql"), SEPARETOR1)
 			logger.SetText(message)
