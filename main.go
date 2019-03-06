@@ -81,7 +81,13 @@ func main() {
 		})
 
 		buttonMongoDbStart.OnClicked(func(*ui.Button) {
-			err := exec.Command("bash", "-c", "mongod").Start()
+			cmd := exec.Command("sudo", "true")
+			err := cmd.Start()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo mongod")).Output()
 			if err != nil {
 				message += fmt.Sprint("Erro ao dar Start no MongoDB!", SEPARETOR2)
 				logger.SetText(message)
