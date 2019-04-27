@@ -8,6 +8,7 @@ import (
 )
 
 var message = ""
+var logger = ui.NewMultilineEntry()
 
 const SEPARETOR1 = "=========================================================================================================================\n"
 const SEPARETOR2 = "\n=========================================================================================================================\n"
@@ -17,7 +18,9 @@ func main() {
 		buttonPostgreSQLStart := ui.NewButton("PostgreSQL - Start")
 		buttonPostgreSQLStop := ui.NewButton("PostgreSQL - Stop")
 		buttonRedisStart := ui.NewButton("Redis - Start")
+		buttonRedisStop := ui.NewButton("Redis - Stop")
 		buttonMongoDbStart := ui.NewButton("MongoDB - Start")
+		buttonMongoDbStop := ui.NewButton("MongoDB - Stop")
 		buttonApacheStart := ui.NewButton("Apache - Start")
 		buttonApacheStop := ui.NewButton("Apache - Stop")
 		buttonMySQLStart := ui.NewButton("MySQL - Start")
@@ -25,7 +28,6 @@ func main() {
 
 		password := ui.NewPasswordEntry()
 
-		logger := ui.NewMultilineEntry()
 		logger.SetReadOnly(true) // Só leitura
 
 		box := ui.NewVerticalBox()
@@ -34,7 +36,9 @@ func main() {
 		box.Append(buttonPostgreSQLStart, false)
 		box.Append(buttonPostgreSQLStop, false)
 		box.Append(buttonRedisStart, false)
+		box.Append(buttonRedisStop, false)
 		box.Append(buttonMongoDbStart, false)
+		box.Append(buttonMongoDbStop, false)
 		box.Append(buttonApacheStart, false)
 		box.Append(buttonApacheStop, false)
 		box.Append(buttonMySQLStart, false)
@@ -56,6 +60,7 @@ func main() {
 			message += fmt.Sprint(psAux("ps aux | grep postgres"), SEPARETOR1)
 			logger.SetText(message)
 		})
+
 		buttonPostgreSQLStop.OnClicked(func(*ui.Button) {
 			err := exec.Command("pg_ctl", "-D", "/usr/local/var/postgres", "stop").Run()
 			if err != nil {
@@ -80,19 +85,50 @@ func main() {
 			logger.SetText(message)
 		})
 
+		buttonRedisStop.OnClicked(func(*ui.Button) {
+			pid, err := exec.Command("bash", "-c", "pgrep redis-server").Output()
+			err = exec.Command("bash", "-c", "kill -9 ", string(pid)).Start()
+			if err != nil {
+				message += fmt.Sprint("Erro ao dar Stop no Redis!", SEPARETOR2)
+				logger.SetText(message)
+			}
+
+			message += fmt.Sprint("Stop no Redis!", SEPARETOR2)
+			logger.SetText(message)
+			message += fmt.Sprint(psAux("ps aux | grep redis-server"), SEPARETOR1)
+			logger.SetText(message)
+		})
+
 		buttonMongoDbStart.OnClicked(func(*ui.Button) {
 			cmd := exec.Command("sudo", "true")
 			err := cmd.Start()
 			if err != nil {
 				log.Fatal(err)
 			}
-
-			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo mongod")).Output()
+			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo -S mongod &")).Output()
 			if err != nil {
 				message += fmt.Sprint("Erro ao dar Start no MongoDB!", SEPARETOR2)
 				logger.SetText(message)
 			}
 			message += fmt.Sprint("Start no MongoDB!", SEPARETOR2)
+			logger.SetText(message)
+			message += fmt.Sprint(psAux("ps aux | grep mongod"), SEPARETOR1)
+			logger.SetText(message)
+		})
+
+		buttonMongoDbStop.OnClicked(func(*ui.Button) {
+			cmd := exec.Command("sudo", "true")
+			err := cmd.Start()
+			if err != nil {
+				log.Fatal(err)
+			}
+			pid, err := exec.Command("bash", "-c", "pgrep mongod").Output()
+			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo -S kill -9 ", string(pid))).Output()
+			if err != nil {
+				message += fmt.Sprint("Erro ao dar Stop no MongoDB!", SEPARETOR2)
+				logger.SetText(message)
+			}
+			message += fmt.Sprint("Stop no MongoDB!", SEPARETOR2)
 			logger.SetText(message)
 			message += fmt.Sprint(psAux("ps aux | grep mongod"), SEPARETOR1)
 			logger.SetText(message)
@@ -140,7 +176,7 @@ func main() {
 				log.Fatal(err)
 			}
 
-			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo launchctl load -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist")).Output()
+			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo -S launchctl load -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist")).Output()
 			if err != nil {
 				message += fmt.Sprint("Erro ao dar Start no MySQL!", SEPARETOR2)
 				logger.SetText(message)
@@ -157,7 +193,7 @@ func main() {
 				log.Fatal(err)
 			}
 
-			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo launchctl unload -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist")).Output()
+			_, err = exec.Command("bash", "-c", fmt.Sprint("echo '", password.Text(), "' | sudo -S launchctl unload -w /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist")).Output()
 			if err != nil {
 				message += fmt.Sprint("Erro ao dar Stop no MySQL!", SEPARETOR2)
 				logger.SetText(message)
